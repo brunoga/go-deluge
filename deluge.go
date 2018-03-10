@@ -1,4 +1,4 @@
-// Copyright 2013 Bruno Albuquerque (bga@bug-br.org.br).
+// Copyright 2013-2018 Bruno Albuquerque (bga@bug-br.org.br).
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -13,7 +13,7 @@
 // the License.
 
 // Package deluge implements a Go wrapper around the Deluge Remote JSON API
-// (http://deluge-torrent.org/docs/1.2/core/rpc.html#remote-api). This allows
+// (http://deluge.readthedocs.io/en/develop/core/rpc.html). This allows
 // programmers to control Deluge (http://deluge-torrent.org) programatically
 // from inside Go programs. Note this is a work in progress and not everything
 // is implemented but adding extra RPC calls is trivial.
@@ -62,8 +62,10 @@ func New(url, password string) (*Deluge, error) {
 // name of the original torrent file. fileDump is the base64 encoded contents of
 // the file and options is a map with options to be set (consult de Deluge
 // Torrent documentation for a list of valid options).
-func (d *Deluge) CoreAddTorrentFile(fileName, fileDump string, options map[string]interface{}) (string, error) {
-	response, err := d.sendJsonRequest("core.add_torrent_file", []interface{}{fileName, fileDump, options})
+func (d *Deluge) CoreAddTorrentFile(fileName, fileDump string,
+	options map[string]interface{}) (string, error) {
+	response, err := d.sendJsonRequest("core.add_torrent_file",
+		[]interface{}{fileName, fileDump, options})
 	if err != nil {
 		return "", err
 	}
@@ -74,8 +76,10 @@ func (d *Deluge) CoreAddTorrentFile(fileName, fileDump string, options map[strin
 // CoreAddTorrentMagnet wraps the core.add_torrent_magnet RPC call. magnetUrl is
 // the Magnet URL for the torrent and options is a map with options to be set
 // (consult de Deluge Torrent documentation for a list of valid options).
-func (d *Deluge) CoreAddTorrentMagnet(magnetUrl string, options map[string]interface{}) (string, error) {
-	response, err := d.sendJsonRequest("core.add_torrent_magnet", []interface{}{magnetUrl, options})
+func (d *Deluge) CoreAddTorrentMagnet(magnetUrl string,
+	options map[string]interface{}) (string, error) {
+	response, err := d.sendJsonRequest("core.add_torrent_magnet",
+		[]interface{}{magnetUrl, options})
 	if err != nil {
 		return "", err
 	}
@@ -86,8 +90,10 @@ func (d *Deluge) CoreAddTorrentMagnet(magnetUrl string, options map[string]inter
 // CoreAddTorrentUrl wraps the core.add_torrent_url RPC call. torrentUrl is
 // the URL for the torrent and options is a map with options to be set
 // (consult de Deluge Torrent documentation for a list of valid options).
-func (d *Deluge) CoreAddTorrentUrl(torrentUrl string, options map[string]interface{}) (string, error) {
-	response, err := d.sendJsonRequest("core.add_torrent_url", []interface{}{torrentUrl, options})
+func (d *Deluge) CoreAddTorrentUrl(torrentUrl string,
+	options map[string]interface{}) (string, error) {
+	response, err := d.sendJsonRequest("core.add_torrent_url",
+		[]interface{}{torrentUrl, options})
 	if err != nil {
 		return "", err
 	}
@@ -96,7 +102,8 @@ func (d *Deluge) CoreAddTorrentUrl(torrentUrl string, options map[string]interfa
 }
 
 func (d *Deluge) authLogin() error {
-	response, err := d.sendJsonRequest("auth.login", []interface{}{d.password})
+	response, err := d.sendJsonRequest("auth.login",
+		[]interface{}{d.password})
 	if err != nil {
 		return err
 	}
@@ -108,7 +115,8 @@ func (d *Deluge) authLogin() error {
 	return nil
 }
 
-func (d *Deluge) sendJsonRequest(method string, params []interface{}) (map[string]interface{}, error) {
+func (d *Deluge) sendJsonRequest(method string,
+	params []interface{}) (map[string]interface{}, error) {
 	atomic.AddUint64(&(d.id), 1)
 	data, err := json.Marshal(map[string]interface{}{
 		"method": method,
@@ -140,7 +148,9 @@ func (d *Deluge) sendJsonRequest(method string, params []interface{}) (map[strin
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("received non-ok status to http request : %d", resp.StatusCode)
+		return nil, fmt.Errorf(
+			"received non-ok status to http request : %d",
+			resp.StatusCode)
 	}
 
 	d.cookies = resp.Cookies()
@@ -160,5 +170,5 @@ func (d *Deluge) sendJsonRequest(method string, params []interface{}) (map[strin
 		return nil, fmt.Errorf("json error : %v", result["error"])
 	}
 
-	return result, err
+	return result, nil
 }
