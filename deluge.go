@@ -70,7 +70,7 @@ func (d *Deluge) CoreAddTorrentFile(fileName, fileDump string,
 		return "", err
 	}
 
-	return response["result"].(string), nil
+	return tryParseResult(response["result"]), nil
 }
 
 // CoreAddTorrentMagnet wraps the core.add_torrent_magnet RPC call. magnetUrl is
@@ -84,7 +84,7 @@ func (d *Deluge) CoreAddTorrentMagnet(magnetUrl string,
 		return "", err
 	}
 
-	return response["result"].(string), nil
+	return tryParseResult(response["result"]), nil
 }
 
 // CoreAddTorrentUrl wraps the core.add_torrent_url RPC call. torrentUrl is
@@ -171,4 +171,12 @@ func (d *Deluge) sendJsonRequest(method string,
 	}
 
 	return result, nil
+}
+
+func tryParseResult(result interface{}) string {
+	res, ok := result.(string)
+	if ok {
+		return res
+	}
+	return ""
 }
